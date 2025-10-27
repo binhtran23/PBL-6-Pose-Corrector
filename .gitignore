@@ -1,0 +1,7 @@
+.venv/
+.idea/
+
+#data video files
+data/bench press/*
+data/deadlift/*
+data/lateral raise/*
