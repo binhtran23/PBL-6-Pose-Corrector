@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <title>Kết Quả Phân Tích</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <div class="container mx-auto max-w-5xl p-6">
+        <div class="bg-white rounded-lg shadow-xl p-8 mt-10">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Kết Quả Phân Tích</h1>
+
+            <!-- Hiển thị Video -->
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-gray-700 mb-3">Video Đã Phân Tích:</h2>
+                <video id="result-video" class="w-full rounded-lg shadow bg-black" controls>
+                    <source src="{{ url_for('processed_file', filename=video_file) }}" type="video/mp4">
+                    Trình duyệt của bạn không hỗ trợ thẻ video.
+                </video>
+            </div>
+
+            <!-- ===== PHẦN MỚI: CHI TIẾT REP ===== -->
+            {% if rep_results %}
+            <div class="mb-6">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4 border-b pb-2">
+                    Chi Tiết Từng Rep
+                </h2>
+                <div class="space-y-4">
+                    {% for rep_id, data in rep_results.items() %}
+                    <div class="border rounded-lg p-4 flex items-center justify-between
+                                {% if data.label == 'Incorrect' %} border-red-300 bg-red-50 
+                                {% else %} border-green-300 bg-green-50 {% endif %}">
+                        
+                        <!-- Thông tin Rep -->
+                        <div>
+                            <span class="font-bold text-lg
+                                        {% if data.label == 'Incorrect' %} text-red-700
+                                        {% else %} text-green-700 {% endif %}">
+                                Rep {{ rep_id }}: {{ data.label }}
+                            </span>
+                            
+                            {% if data.label == 'Incorrect' %}
+                            <p class="text-sm text-red-600">Lý do: {{ data.reason }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        {% if data.start_time is defined %}
+                        <button data-start-time="{{ data.start_time }}"
+                                class="jump-button bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold py-2 px-4 rounded-lg transition duration-200">
+                            Xem ({{ "%.1f"|format(data.start_time) }}s)
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            <!-- ===== KẾT THÚC PHẦN MỚI ===== -->
+
+
+            <!-- Các nút Tải Về -->
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="{{ url_for('processed_file', filename=video_file) }}" download
+                   class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 text-center">
+                    Tải Video Kết Quả (.mp4)
+                </a>
+                <a href="{{ url_for('processed_file', filename=csv_file) }}" download
+                   class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 text-center">
+                    Tải File Log (.csv)
+                </a>
+            </div>
+
+            <!-- Quay Lại Trang Chủ -->
+            <div class="text-center mt-8">
+                <a href="{{ url_for('index') }}" class="text-blue-600 hover:text-blue-800 transition duration-300">
+                    &larr; Phân tích video khác
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SCRIPT ĐỂ TUA VIDEO -->
+    <script>
+        function jumpToTime(timeInSeconds) {
+            const videoElement = document.getElementById('result-video');
+            if (videoElement) {
+                videoElement.currentTime = timeInSeconds;
+                videoElement.play();
+                // Cuộn lên đầu trang để xem video
+                window.scrollTo(0, 0);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const jumpButtons = document.querySelectorAll('.jump-button');
+
+            jumpButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const startTime = button.getAttribute('data-start-time');
+                    if (startTime) {
+                        jumpToTime(parseFloat(startTime));
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

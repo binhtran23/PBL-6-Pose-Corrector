@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Tải Lên Video</title>
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Thêm font Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        /* Tùy chỉnh thanh tải lên */
+        input[type="file"]::file-selector-button {
+            background-color: #3b82f6; /* bg-blue-500 */
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem; /* rounded-md */
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        input[type="file"]::file-selector-button:hover {
+            background-color: #2563eb; /* bg-blue-600 */
+        }
+
+        /* Thêm hiệu ứng loading */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Ẩn loader mặc định */
+        #loading-overlay {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center font-sans">
+
+    <!-- Lớp phủ Loading -->
+    <div id="loading-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex flex-col items-center justify-center z-50">
+        <div class="loader mb-4"></div>
+        <p class="text-white text-lg font-semibold">Đang xử lý video, vui lòng chờ...</p>
+        <p class="text-gray-300">Quá trình này có thể mất vài phút.</p>
+    </div>
+
+    <!-- Nội dung chính -->
+    <div class="bg-white p-10 rounded-xl shadow-lg w-full max-w-lg">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Tải Lên Video Phân Tích</h1>
+        
+        <!-- Hiển thị thông báo lỗi (nếu có) -->
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4" role="alert">
+              <strong class="font-bold">Lỗi!</strong>
+              <span class="block sm:inline">{{ messages[0] }}</span>
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <!-- 
+            CẬP NHẬT QUAN TRỌNG:
+            1. enctype="multipart/form-data" là BẮT BUỘC để gửi tệp.
+            2. Thêm id="upload-form" để JavaScript có thể kiểm soát.
+        -->
+        <form id="upload-form" action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data">
+            
+            <div class="mb-6">
+                <label for="video-file" class="block text-sm font-medium text-gray-700 mb-2">1. Chọn tệp video của bạn:</label>
+                <!-- CẬP NHẬT: Đổi name="file" thành name="video" -->
+                <input type="file" name="video" id="video-file" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" required>
+            </div>
+
+            <div class="mb-8">
+                <label class="block text-sm font-medium text-gray-700 mb-2">2. Chọn bài tập:</label>
+                <select id="exercise" name="exercise" class="w-full px-4 py-3">
+                    <option value="">-- Vui lòng chọn --</option>
+                    <option value="lateral_raise">Lateral Raise (Nâng tạ vai)</option>
+                    <option value="bicep_curl">Biceps Curl (Cuốn tạ tay trước)</option>
+                    <!-- Thêm các bài tập khác ở đây -->
+                </select>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                Phân Tích Video
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // JavaScript để hiển thị màn hình loading khi gửi form
+        document.getElementById('upload-form').addEventListener('submit', function() {
+            // Kiểm tra xem tệp đã được chọn chưa
+            var fileInput = document.getElementById('video-file');
+            if (fileInput.files.length > 0) {
+                // Nếu có tệp, hiển thị loading
+                document.getElementById('loading-overlay').style.display = 'flex';
+            }
+            // Nếu không có tệp, trình duyệt sẽ tự động hiển thị thông báo "required"
+            // và form sẽ không được gửi, nên không cần xử lý thêm.
+        });
+    </script>
+
+</body>
+</html>

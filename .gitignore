@@ -1,7 +1,13 @@
 .venv/
 .idea/
+__pycache__/
 
 #data video files
 data/bench press/*
 data/deadlift/*
 data/lateral raise/*
+
+static/processed/*
+uploads/*
+
+todo.txt
