@@ -34,8 +34,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['PROCESSED_FOLDER'] = PROCESSED_FOLDER
 app.config['MODEL_FOLDER'] = MODEL_FOLDER
 
-# Thêm secret key cho flash messages
-app.config['SECRET_KEY'] = 'your_super_secret_key_12345' # Thay đổi key này
 
 # --- Vô hiệu hóa cache ---
 @app.after_request

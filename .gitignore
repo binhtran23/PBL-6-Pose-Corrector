@@ -8,4 +8,8 @@ data/*
 static/processed/*
 uploads/*
 
+#Notebooks
+notebooks/model_checkpoints/*
+notebooks/output/*
+
 todo.txt
